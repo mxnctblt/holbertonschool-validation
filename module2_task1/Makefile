@@ -1,7 +1,7 @@
 build: ## compile the source code of the application to a binary
 	make lint
 	go build main.go
-	mv main awesome-api
+	mv main awesome-api || true
 run: ## Run the application in background and write logs into a file
 	./awesome-api >./awesome-api.log 2>&1 &
 	echo 'HIT: healtcheck' >> awesome-api.log
