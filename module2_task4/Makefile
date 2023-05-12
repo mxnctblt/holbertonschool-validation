@@ -9,6 +9,6 @@ post: ## Create a new blog post
 help: ## Show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 check: ## Lint of the Markdown source files & Analysis of the links
-	 find ./ -type f -name "*.md" -exec markdown-link-check "{}" \; && find ./ -type f -name "*.md" -exec markdownlint "{}" \;
+	markdownlint ./content/posts/*.md && markdown-link-check ./content/posts/*.md
 validate: ## validate the file ./dist/index.htm
 	python3 /opt/W3C-Validator/w3c_validator.py ./dist/index.html || true
