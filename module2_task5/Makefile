@@ -6,7 +6,8 @@ go-build: ## compile the source code of the application to a binary
 	go build main.go
 	mv main awesome-api || true
 hugo-build: ## Generate the website
-	hugo
+	make check
+	hugo || true
 post: ## Create a new blog post
 	hugo new posts/$(POST_NAME).md
 	sed -i '/title:/c\title: "$(POST_TITLE)"' content/posts/$(POST_NAME).md
@@ -27,6 +28,8 @@ test: ## To test it to ensure that it behaves as expected
 	make validate
 lint: ## lint the source code
 	golangci-lint run
+check: ## Lint of the Markdown source files & Analysis of the links
+	markdownlint ./content/posts/*.md && markdown-link-check ./content/posts/*.md
 unit-tests:	## Unit-tests:
 	go test -v -short -coverprofile=coverage-units.out
 integration-tests:  ## Integrations-tests
