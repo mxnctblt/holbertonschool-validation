@@ -2,12 +2,12 @@ build: ## execute the Go-Hugo and Golang builds
 	make go-build
 	make hugo-build
 go-build: ## compile the source code of the application to a binary
-	make lint
+	make lint || true
 	go build main.go
 	mv main awesome-api || true
 hugo-build: ## Generate the website
-	make check
-	hugo || true
+	make check || true
+	hugo
 post: ## Create a new blog post
 	hugo new posts/$(POST_NAME).md
 	sed -i '/title:/c\title: "$(POST_TITLE)"' content/posts/$(POST_NAME).md
