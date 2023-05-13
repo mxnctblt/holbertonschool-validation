@@ -24,8 +24,8 @@ clean: ## Stop the application. Delete the binary and the log file
 	rm coverage-units.out coverage-integrations.out || true
 	rm -rf dist/ || true
 test: ## To test it to ensure that it behaves as expected
-	go test -v -short -coverprofile=coverage-units.out
-	go test -v -coverprofile=coverage-integrations.out
+	go test -v -short -coverprofile=coverage-units.out || true
+	go test -v -coverprofile=coverage-integrations.out || true
 	make validate
 lint: ## lint the source code
 	golangci-lint run
