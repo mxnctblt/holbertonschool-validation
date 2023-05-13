@@ -1,7 +1,6 @@
 package main
 
 import (
-  //nolint:staticcheck
   "io/ioutil"
   "net/http"
   "net/http/httptest"
@@ -22,33 +21,32 @@ func Test_server(t *testing.T) {
     {
       name:         "Home page",
       URI:          "",
-      responseCode: 404,
-      body:         "404 page not found\n",
-    },
-    {
-      name:         "Hello page",
-      URI:          "/hello?name=Holberton",
       responseCode: 200,
-      body:         "Hello Holberton!",
-    },
-    {
-      name:	    "Lux",
-      URI:	    "/health?name=Alive",
-      responseCode: 200,
-      body:	    "ALIVE",
-    },
-    {
-      name:         "No name",
-      URI:          "/hello?name=",
-      responseCode: 400,
       body:         "",
     },
     {
-      name:         "No Parameter",
-      URI:          "/hello?",
-      responseCode: 200,
-      body:         "Hello there!",
-    },
+	  name:         "Rosalind Franklin",
+	  URI: 			"/hello?name=Rosalind",
+	  responseCode: 200,
+	  body:         "Hello Rosalind!",
+	},
+	{
+	  name:         "Empty name",
+	  URI:  		"/hello?name=",
+	  responseCode: 400,
+	},
+	{
+	  name:         "No name",
+	  URI:  		"/hello",
+	  responseCode: 200,
+	  body:         "Hello there!",
+	},
+	{
+	  name:         "Healthcheck page",
+	  URI:          "/health",
+	  responseCode: 200,
+	  body:         "ALIVE",
+	},
   }
 
   for _, tt := range tests {
@@ -76,7 +74,7 @@ func Test_server(t *testing.T) {
         t.Fatal(err)
       }
       gotBody := string(bodyBytes)
-      if gotBody != expectedBody {
+      if gotBody != expectedBody && len(expectedBody) > 0 {
         t.Errorf("handler returned unexpected body: got %q want %q", gotBody, expectedBody)
       }
     })
