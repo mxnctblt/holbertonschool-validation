@@ -1,4 +1,4 @@
-module github.com/mxnctblt/awesome-api
+module github.com/holbertonschool-validation/module2_task5
 
 go 1.16
 
