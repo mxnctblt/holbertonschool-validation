@@ -16,6 +16,8 @@ run: ## Run the application in background and write logs into a file
 	echo 'HIT: healtcheck' >> awesome-api.log
 stop: ## Stop the application with the command kill
 	pkill awesome-api
+check: ## Lint of the Markdown source files & Analysis of the links
+	markdownlint ./content/posts/*.md && markdown-link-check ./content/posts/*.md
 clean: ## Stop the application. Delete the binary and the log file
 	make stop || true
 	rm awesome-api awesome-api.log || true
