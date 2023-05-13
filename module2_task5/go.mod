@@ -1,4 +1,4 @@
-module github.com/holbertonschool-validation/module2_task3
+module github.com/holbertonschool-validation/module2_task5
 
 go 1.16
 
