@@ -11,7 +11,6 @@ post: ## Create a new blog post
 	sed -i '/title:/c\title: "$(POST_TITLE)"' content/posts/$(POST_NAME).md
 run: ## Run the application in background and write logs into a file
 	make build
-	make test
 	./awesome-api >./awesome-api.log 2>&1 &
 	echo 'HIT: healtcheck' >> awesome-api.log
 stop: ## Stop the application with the command kill
@@ -24,8 +23,8 @@ clean: ## Stop the application. Delete the binary and the log file
 	rm coverage-units.out coverage-integrations.out || true
 	rm -rf dist/ || true
 test: ## To test it to ensure that it behaves as expected
-	go test -v -short -coverprofile=coverage-units.out
-	go test -v -coverprofile=coverage-integrations.out
+	make integration-tests
+	make unit-tests
 	make validate
 lint: ## lint the source code
 	golangci-lint run
