@@ -50,7 +50,7 @@
 - help: Display help message.
 
 ## Workflow
--  The original workflow file <...>/.github/workflows/module3_task2.yml must be:
+-  The original workflow file <...>/.github/workflows/module3_task3.yml must be:
    -  Present with a valid YAML syntax
    -  It must be a valid GitHub action workflow with 1 job and 1 steps
    -  It must be have 2 triggers
