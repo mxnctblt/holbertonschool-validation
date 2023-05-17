@@ -1,4 +1,25 @@
+# 1. Add Build Dependencies to the CI Environment
+
 ## Prerequisites
+- Same requirement as the previous module:
+    - A valid Hugo website
+    - Makefile with the same targets, including help
+    - A README.md file up-to-date with the project state (⚠️ Don’t forget to add a section Build Workflow)
+- The file .github/workflows/module3_task1.yml must be present
+    - It must be valid in YAML syntax
+    - It must be a valid GitHub action workflow with 1 job with at least 7 steps (checkout, running setup.sh and then the 5 make commands)
+    - It must be have 2 triggers
+```
+➜ yamllint "$(readlink github-workflow.yml)" --no-warnings >/dev/null 2>&1 && echo OK
+OK
+```
+- The workflow module3_task1 must be enabled in GitHub Actions and must have been run successfully
+```
+➜ curl --silent --show-error --user "${GH_USERNAME}:${GH_TOKEN}" "https://api.github.com/repos/${GH_USERNAME}/${GH_REPO}/actions/runs" | jq '.workflow_runs[0] | .name, .head_branch, .conclusion'
+"module3_task1"
+"main"
+"success"
+```
 
 ## Lifecycle
 

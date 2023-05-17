@@ -1,8 +1,6 @@
 ---
 title: "Welcome to Awesome Inc."
-date: 2023-05-03T00:50:41-07:00
-draft: false
+date: 2023-05-03T06:42:56-07:00
+draft: true
 ---
-Enter your name below and click on the button "Say Hello":
 
-{{< sayHello >}}

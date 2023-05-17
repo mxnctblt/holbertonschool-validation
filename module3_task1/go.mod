@@ -1,4 +1,4 @@
-module github.com/mxnctblt/awesome-api
+module github.com/mxnctblt
 
 go 1.20
 
