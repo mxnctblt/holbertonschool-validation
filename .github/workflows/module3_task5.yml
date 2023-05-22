@@ -79,7 +79,7 @@ jobs:
         # statement : pullrequest and branch main
         if: |
           github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
-        uses: nwtgck/actions-netlify@v2.0
+        uses: nwtgck/actions-netlify
         with:
           publish-dir: 'module3_task5/dist'
           production-branch: main
