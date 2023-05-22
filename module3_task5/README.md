@@ -1,6 +1,5 @@
 <h1 align="center">Continuous Integration / Continuous Deployment
 
-
 ## Learning Objectives
 This project aims at practicing with Continuous Integration (CI) / Delivery (CD) / Deployment to understand the differences, the goals and the value.
 
