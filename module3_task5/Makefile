@@ -1,54 +1,60 @@
-GO=go
-TARGET=awesome-api
-RM=rm -rf
-MAKE=make
-COVERAGE=coverage
-HUGO=hugo
+.POSIX:
+DESTDIR=dist
+HUGO_VERSION=0.84.0
 
-build:	## Generate the source code of the application to a binary.
-	$(GO) mod tidy
-	$(MAKE) check && $(HUGO) && $(GO) build -o $(TARGET)
+.PHONY: build
+build:		## update Hugo version & Build a new website in the directory /dist 
+	@hugo -c $(DESTDIR)
 
-run:	## Run the application in background by executing the binary.
-	./$(TARGET) >./$(TARGET).log 2>&1 &
+.PHONY: clean
+clean:		## Removes all files from the directory /dist
+	rm -Rf $(DESTDIR)/*
+	rm -f ./awesome-website.zip
 
-post:	## Create a new blog post whose filename and title come from the environment variables POST_TITLE and POST_NAME
-	$(HUGO) new posts/$(POST_NAME).md
-	sed -i '2s/.*/title: "$(POST_TITLE)"/' content/posts/$(POST_NAME).md
+.PHONY: post
+post:		## Post a new blog post 
+	hugo new posts/$(POST_NAME).md
+	sed -i 's/title:.*/title: "$(POST_TITLE)"/' content/posts/$(POST_NAME).md
+	
+.PHONY: help
+help: 		## Show this help
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
-stop:	## Stop the application.
-	@pkill $(TARGET)
+.PHONY: check
+check: 		## check the markdown's lint
+	@markdownlint -f ./content/posts/*.md && markdown-link-check ./content/posts/*.md
 
-clean:	## Stop the application. Delete the binary and the log file.
-	@if pgrep -x $(TARGET) > /dev/null; then \
-		pkill $(TARGET); \
-	fi
-	@$(RM) $(TARGET) $(TARGET).log $(COVERAGE)-units.out $(COVERAGE)-integrations.out dist/ *~
+.PHONY: validate
+validate:  	## validate W3C
+	@git clone https://github.com/holbertonschool/W3C-Validator.git
+	@python3 /opt/W3C-Validator/w3c_validator.py ./dist/index.html || true
 
-test:	## Test the application.
-	$(MAKE) unit-tests
-	$(MAKE) integration-tests
-	$(MAKE) validate
+.PHONY: run
+run: 		## runs the api and logs it
+	./awesome-api > ./awesome-api.log 2>&1 &
 
-unit-tests: ## Run unit tests
-	go test -v -short -coverprofile=$(COVERAGE)-units.out
+.PHONY: stop
+stop: 		## kills the process with PID name
+	pkill awesome-api
 
-integration-tests: ## Run integration tests
-	go test -v -coverprofile=$(COVERAGE)-integrations.out
+.PHONY: test 
+test:	 	## run tests
+	@make unit-tests 
+	@make integration-tests
 
-lint:	## Lint go markdown code
-	markdownlint -f DEPLOY.md README.md || true
+.PHONY: unit-tests
+unit-tests: ## run unit tests
+	@go test -v -short -coverprofile=coverage-units.out
 
-check:	## Lint markdonw source, check dead links
-	markdownlint ./content/posts/*.md
-	find content -name \*.md -print0 | xargs -0 -n1 markdown-link-check
+.PHONY: integration-tests
+integration-tests:	## run integration tests
+	@go test -v -coverprofile=coverage-integrations.out
 
-validate:	## Validate the file dist/index.html using the command line Holberton’s W3C Validator.
-	python3 ./w3c_validator.py ./dist/index.html || true
+.PHONY: package
+package: 	## produce a file awesome-website.zip 
+	zip -r awesome-website.zip awesome-api dist/*
 
-package:	## Produce awesome-website.zip containing awesome-api and dist directory
-	@hugo
-	zip -FSr awesome-website.zip . -i dist/ awesome-api
+.PHONY: lint
+lint:		## lint the files
+	@markdownlint -f ./module3_task4/README.md ./module3_task4/DEPLOY.md
 
-help:	## Show this help usage.
-	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
