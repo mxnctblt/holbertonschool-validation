@@ -2,10 +2,10 @@
 # Workflow name
 name: module3_task5
 # action who declench workflow
-"on":
+on:
   push:
     branches:
-      - main
+      - master
     tags:
       - "1.0.1"
   # programmate time of workflow execution
