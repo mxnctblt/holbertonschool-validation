@@ -78,7 +78,7 @@ jobs:
       - name: Deploy in Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:
-          publish-dir: 'module3_task5/dist'
+          publish-dir: './module3_task5/dist'
           production-branch: master
           enable-pull-request-comment: true
           enable-commit-comment: true
