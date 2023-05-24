@@ -80,11 +80,11 @@ jobs:
         with:
           publish-dir: './module3_task5/dist'
           production-branch: master
+          github-token: ${{ secrets.TOKEN }}
+          deploy-message: '🎉 Published on $(date) 🚀 Deployed on $(date)'
           enable-pull-request-comment: true
           enable-commit-comment: true
           overwrites-pull-request-comment: true
-          deploy-message: '🚀 Published on'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
