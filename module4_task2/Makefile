@@ -4,18 +4,23 @@ RM=rm -rf
 MAKE=make
 COVERAGE=coverage
 HUGO=hugo
-DOCKER_OPTIONS=--rm --tty --volume=`pwd`:/app --workdir=/app
-DOCKER=docker run $(DOCKER_OPTIONS)
-DOCKER_IMAGE=golang:1.15.8-buster
-DOCKER_IMAGE_BUILD_NAME=awesome:build
-DOCKERFILE_PATH=./.build
+
+# docker run <option> 
+# --rm :tells the container to be removed after it finishes
+# $(PWD):/app current folder would be bound to the containers /app folder
+# -w work directory
 
 build:	## Generate the source code of the application to a binary.
-	$(MAKE) lint
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) $(GO) mod tidy
-	$(MAKE) check
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) $(HUGO)
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) $(GO) build -o $(TARGET)
+	make lint
+	docker run --rm -v $(PWD):/app -w /app awesome:build go mod tidy
+	docker run --rm -v $(PWD):/app -w /app awesome:build hugo
+	docker run --rm -v $(PWD):/app -w /app awesome:build go build -o $(TARGET)
+
+build-docker:	## Build docker image awesome:build
+	docker build -t awesome:build -f .build/Dockerfile .
+
+docker-tests:   ## Test docker image awesome:build
+	docker run --rm -v $(PWD):/app -v /var/run/docker.sock:/var/run/docker.sock -w /app awesome:build container-structure-test test --image awesome:build --config .build/cst.yml
 
 run:	## Run the application in background by executing the binary.
 	./$(TARGET) >./$(TARGET).log 2>&1 &
@@ -28,39 +33,36 @@ stop:	## Stop the application.
 	@pkill $(TARGET)
 
 clean:	## Stop the application. Delete the binary and the log file.
-	@if pgrep -x $(TARGET) > /dev/null; then \
-		pkill $(TARGET); \
-	fi
-	@$(RM) $(TARGET) $(TARGET).log $(COVERAGE)-units.out $(COVERAGE)-integrations.out dist/ *~ awesome-website.zip
+	@sudo $(RM) $(TARGET) $(TARGET).log $(COVERAGE)-units.out $(COVERAGE)-integrations.out dist/ *~
 
 test:	## Test the application.
 	$(MAKE) unit-tests
 	$(MAKE) integration-tests
+	$(MAKE) validate
 
 unit-tests: ## Run unit tests
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) sh -c "$(GO) test -v -short -coverprofile=$(COVERAGE)-units.out"
+	docker run --rm --volume=$(shell pwd):/app --workdir=/app awesome:build apk add --no-cache build-base && go test -v -short -coverprofile=coverage-units.out
+
+
 
 integration-tests: ## Run integration tests
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) sh -c "$(GO) test -v -coverprofile=$(COVERAGE)-integrations.out"
+	docker run --rm --volume=$(shell pwd):/app --workdir=/app awesome:build apk add --no-cache build-base && go test -v -coverprofile=coverage-integrations.out
 
-lint:	## Lint go lang code
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) golangci-lint run
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) markdownlint DEPLOY.md
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) hadolint $(DOCKERFILE_PATH)/Dockerfile
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) yamllint $(DOCKERFILE_PATH)/cst.yml
+
+lint:	## Lint go markdown code
+	make build-docker
+	docker container run --rm -i hadolint/hadolint < .build/Dockerfile
+	docker run --volume=$(shell pwd):/app --workdir=/app awesome:build markdownlint -f DEPLOY.md
 
 check:	## Lint markdonw source, check dead links
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) markdownlint content/**/*.md
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) sh -c "find content -name \*.md -print0 | xargs -0 -n1 markdown-link-check"
+	markdownlint ./content/posts/*.md
+	find content -name \*.md -print0 | xargs -0 -n1 markdown-link-check
 
-package:	## Create a zip file with the awesome-api binary and the dist/ directory
-	zip -r awesome-website.zip awesome-api dist
+validate:	## Validate the file dist/index.html using the command line Holberton’s W3C Validator.
+	docker run awesome:build sh -c "python3 ./w3c_validator.py ./dist/index.html || true"
 
-build-docker: ## Build docker images for the project
-	docker build -t $(DOCKER_IMAGE_BUILD_NAME) $(DOCKERFILE_PATH)
-
-docker-tests: ## Test the container
-	$(DOCKER) $(DOCKER_IMAGE_BUILD_NAME) container-structure-test test --image $(DOCKER_IMAGE_BUILD_NAME) $(DOCKERFILE_PATH)/cst.yml
+package:	## Produce awesome-website.zip containing awesome-api and dist directory
+	zip -FSr awesome-website.zip awesome-api dist
 
 help:	## Show this help usage.
 	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)

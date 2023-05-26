@@ -1,14 +1,23 @@
 #!/bin/bash
 
-apt-get update &&  apt-get install -y curl
+sudo apt-get update && sudo apt-get install -y make git zip
 
-## Add official nodejs distribution apt repository
-curl -sL https://deb.nodesource.com/setup_14.x | bash -
+# download/install minimal version to use template ananke
+sudo curl -L https://github.com/gohugoio/hugo/releases/download/v0.84.0/hugo_extended_0.84.0_Linux-64bit.deb -o hugo.deb
+sudo apt install ./hugo.deb
+#remove file after installation
+sudo rm hugo.deb
 
-apt-get install -y --no-install-recommends nodejs=14.*
+# download/install linter
 
-npm install --global \
-  markdownlint-cli@0.26.0 \
-  markdown-link-check@3.8.6 2> /dev/null
+sudo npm install -g markdownlint-cli
+sudo npm install -g markdown-link-check
+sudo curl -L https://github.com/hadolint/hadolint/releases/download/v2.6.0/hadolint-Linux-x86_64 -o hadolint
+sudo chmod u+x hadolint
 
-exit $?
+# Uninstall go
+sudo apt-get remove golang-go
+rm -rf /usr/local/go
+
+# remove dist directory
+rm -rf dist/ 2> /dev/null
