@@ -49,6 +49,10 @@ While it’s not the only way of doing it, Docker would be a great tool for solv
 
 - validate: Validate the file dist/index.html using the command line Holberton’s W3C Validator.
 
+- build-docker: build docker image for testing.
+
+- docker-tests: testing the container built.
+
 - help: Display help message.
 
 ## Workflow
