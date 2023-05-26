@@ -1,0 +1,10 @@
+---
+tests:
+  - name: Test if lint rule is supported
+    command: make lint
+    assert:
+      exists: true
+  - name: Test if test rule is supported
+    command: make test
+    assert:
+      exists: true
